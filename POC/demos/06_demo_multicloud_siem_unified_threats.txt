@@ -1,0 +1,22 @@
+================================================================================
+POC / DEMO IDEA: Visibilidade Unificada Multi-Nuvem (GCP + AWS + Azure + On-Premises)
+Arquivo: 06_demo_multicloud_siem_unified_threats.txt
+Tempo Estimado de Apresentacao: 15 minutos
+Nivel de Impacto Comercial: ALTO (Empresas Multi-Cloud e Hibridas)
+================================================================================
+
+1. HISTORIA DO CENARIO (STORYTELLING):
+   Um invasor realiza reconhecimento em um bucket AWS S3, usa credenciais roubadas para 
+   acessar uma Maquina Virtual no Azure e tenta conectar a um banco de dados no Google Cloud. 
+   Em SIEMs tradicionais, sao 3 silos isolados sem correlacao.
+
+2. FLUXO DA DEMONSTRACAO NO GOOGLE SECOPS:
+   - Ingestao simultanea de AWS CloudTrail, Azure Activity Logs e GCP Audit Logs.
+   - O modelo UDM normaliza todos os eventos sob o mesmo padrao semantica.
+   - O analista realiza uma busca unica no Chronicle SIEM por IP ou Usuario:
+     * O Chronicle renderiza a linha do tempo cronologica unificada dos 3 provedores.
+   - Alerta unico correlacionado no SOAR consolida o incidente multi-nuvem.
+
+3. VALOR DESTACADO PARA O CLIENTE:
+   - Fim dos silos de seguranca entre provedores de nuvem.
+   - Retencao de 1 ano de telemetria bruta em velocidade de busca petabyte sem custo indexado.
