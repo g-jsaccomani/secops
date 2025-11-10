@@ -1,0 +1,25 @@
+================================================================================
+POC / DEMO IDEA: Credencial Comprometida e Viagem Impossivel (Entra ID / Workspace)
+Arquivo: 03_demo_identity_impossible_travel_mfa.txt
+Tempo Estimado de Apresentacao: 10 minutos
+Nivel de Impacto Comercial: ALTO (Operacoes de TI / Gestores de Identidade)
+================================================================================
+
+1. HISTORIA DO CENARIO (STORYTELLING):
+   Uma colaboradora faz login corporativo valido no Brasil (Sao Paulo). Apenas 45 minutos 
+   depois, a mesma credencial realiza login com sucesso a partir de um IP na Russia ou Holanda, 
+   indicando vazamento de sessao de cookie (Pass-the-Cookie) ou credencial em lote.
+
+2. FLUXO DA DEMONSTRACAO NO GOOGLE SECOPS:
+   - Ingestao continua dos logs do Microsoft Entra ID (Azure AD) ou Google Workspace via UDM.
+   - A regra YARA-L "secops_identity_impossible_travel_anomaly" calcula a distancia geografica 
+     e o delta de tempo entre os dois eventos (`$e2.metadata.event_timestamp.seconds - $e1.metadata.event_timestamp.seconds < 7200`).
+   - Alerta gerado com severidade HIGH no SIEM.
+   - O SOAR executa o Playbook de Resposta de Identidade:
+     * Invalida todos os Refresh Tokens da conta.
+     * Envia push interativo no Slack/Teams para o usuario confirmar se foi ele.
+     * Caso negativo, forca redefinicao de senha e step-up de autenticador MFA.
+
+3. VALOR DESTACADO PARA O CLIENTE:
+   - Correlacao inteligente multi-nuvem (GCP + Microsoft + Workspace).
+   - Bloqueio preventivo antes que o invasor inicie movimentacao lateral.
