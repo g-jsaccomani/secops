@@ -1,0 +1,25 @@
+================================================================================
+POC / DEMO IDEA: Ameaca Interna e Escalada de Privilegios em Cloud IAM
+Arquivo: 05_demo_insider_threat_privilege_escalation.txt
+Tempo Estimado de Apresentacao: 12 minutos
+Nivel de Impacto Comercial: ALTO (Auditoria, SecOps, Governanca)
+================================================================================
+
+1. HISTORIA DO CENARIO (STORYTELLING):
+   Uma conta de prestador de servicos ou desenvolvedor com perfil restrito realiza uma 
+   chamada a API `SetIamPolicy` para conceder a si mesmo o papel primitivo de `roles/owner` 
+   ou cria uma chave privada de Service Account de producao para persistencia de acesso.
+
+2. FLUXO DA DEMONSTRACAO NO GOOGLE SECOPS:
+   - O Cloud Audit Logs ingere a mutacao de IAM em tempo real.
+   - O Event Threat Detection (ETD) e a regra YARA-L "gcp_privilege_escalation_sensitive_role" 
+     detectam a violacao da politica de menor privilegio (Least Privilege).
+   - O Google SecOps SOAR executa o Playbook:
+     * Compara a acao contra a janela de mudanca autorizada.
+     * Revoga imediatamente o papel `roles/owner` concedido.
+     * Deleta a chave de service account gerada.
+     * Envia alerta critico com o historico de comandos do ator para o SOC.
+
+3. VALOR DESTACADO PARA O CLIENTE:
+   - Bloqueio instantaneo de ameacas internas (Insider Threats) e abuso de credenciais.
+   - Auditoria automatizada sem sobrecarga operacional.
