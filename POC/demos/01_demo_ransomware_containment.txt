@@ -1,0 +1,27 @@
+================================================================================
+POC / DEMO IDEA: Contencao Rapida de Ransomware e Isolamento de Host
+Arquivo: 01_demo_ransomware_containment.txt
+Tempo Estimado de Apresentacao: 15 minutos
+Nivel de Impacto Comercial: ALTO (C-Level / CISOs)
+================================================================================
+
+1. HISTORIA DO CENARIO (STORYTELLING):
+   Um desenvolvedor ou usuario interno baixa inadvertidamente um arquivo malicioso 
+   executavel ou script ofuscado em uma VM / estacao de trabalho. O malware inicia 
+   comunicacao com um servidor de Comando e Controle (C2) e tenta enumerar compartilhamentos.
+
+2. FLUXO DA DEMONSTRACAO NO GOOGLE SECOPS:
+   - Ingestao do evento de execucao do endpoint (EDR) ou telemetria de rede (VPC Flow).
+   - O Chronicle SIEM dispara a regra YARA-L "OUTBOUND_NETWORK_C2_CONNECTION" / "SUSPICIOUS_PROCESS".
+   - O alerta e enviado automaticamente para a fila do Google SecOps SOAR.
+   - O Playbook "Automated Host Containment" executa em segundos:
+     * Consulta o VirusTotal / Threat Intelligence para reputacao do IP/Hash.
+     * Tira snapshot forense do disco da VM para preservacao de evidencias.
+     * Aplica tag de rede no GCP ("quarantine-tag") isolando o host de todo o trafego lateral.
+     * Envia notificacao com resumo para o canal de Seguranca no Slack/Teams.
+     * Cria ticket no Jira/ServiceNow com todos os IOCs coletados.
+
+3. VALOR DESTACADO PARA O CLIENTE:
+   - Reducao do MTTR (Mean Time to Respond) de horas/dias para menos de 30 segundos.
+   - Resposta automatizada sem dependencia de intervencao humana manual na madrugada.
+   - Garantia de cadeia de custodia e preservacao forense sem perder dados.
