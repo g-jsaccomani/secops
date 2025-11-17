@@ -1,0 +1,21 @@
+================================================================================
+POC / DEMO IDEA: Seguranca de IA Generativa com Model Armor e Google SecOps
+Arquivo: 04_demo_ai_model_armor_and_prompt_injection.txt
+Tempo Estimado de Apresentacao: 15 minutos
+Nivel de Impacto Comercial: INOVADOR / ALTISSIMO (CTOs, Heads de IA e Inovacao)
+================================================================================
+
+1. HISTORIA DO CENARIO (STORYTELLING):
+   Uma aplicacao de atendimento ao cliente usando modelos Gemini / Vertex AI sofre um 
+   ataque de Prompt Injection / Jailbreak com tentativa de forcar o modelo a vazar chaves 
+   de API de backend ou regras internas do sistema.
+
+2. FLUXO DA DEMONSTRACAO NO GOOGLE SECOPS:
+   - O filtro do Google Model Armor intercepta a entrada maliciosa antes de chegar ao LLM.
+   - O evento de violacao e enviado via telemetria para o SCC Enterprise e Chronicle SIEM.
+   - A regra de deteccao de anomalia de IA correlaciona o IP de origem com repetidas tentativas.
+   - O SOAR bloqueia temporariamente o IP no Cloud Armor WAF na borda da aplicacao.
+
+3. VALOR DESTACADO PARA O CLIENTE:
+   - Protecao nativa de ponta a ponta para cargas de trabalho de Inteligencia Artificial.
+   - Demonstracao de soberania e conformidade com o framework de Seguranca de IA do Google (SAIF).
