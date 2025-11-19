@@ -1,0 +1,26 @@
+================================================================================
+POC / DEMO IDEA: Deteccao e Bloqueio de Exfiltracao de Dados Sensiveis (BigQuery + DLP)
+Arquivo: 02_demo_data_exfiltration_bigquery_dlp.txt
+Tempo Estimado de Apresentacao: 15 minutos
+Nivel de Impacto Comercial: CRITICO (LGPD / Compliance / DPO / CISO)
+================================================================================
+
+1. HISTORIA DO CENARIO (STORYTELLING):
+   Um usuario interno ou credencial comprometida tenta exportar uma tabela inteira de 
+   dados financeiros ou dados pessoais de clientes (PII) do BigQuery para um bucket 
+   Cloud Storage publico ou de terceiro fora da organizacao.
+
+2. FLUXO DA DEMONSTRACAO NO GOOGLE SECOPS:
+   - O SCC Enterprise (Event Threat Detection & Data Security Posture Management - DSPM) 
+     identifica o `bigquery.jobs.create` com destino anomalo.
+   - O Sensitive Data Protection (DLP) cataloga que o volume de dados continha CPFs/Cartoes.
+   - A regra YARA-L "DATA_EXFILTRATION_BIGQUERY_EXPORT" e acionada no Chronicle SIEM.
+   - O Google SecOps SOAR aciona o Playbook de Resposta:
+     * Revoga imediatamente as permissoes de `bigquery.dataEditor` da credencial.
+     * Encerra sessoes ativas no Cloud IAM.
+     * Bloqueia o bucket de destino no Cloud Storage.
+     * Gera relatorio de conformidade para o DPO com os dados atingidos.
+
+3. VALOR DESTACADO PARA O CLIENTE:
+   - Evita multas milionarias da LGPD/GDPR e vazamentos de reputacao.
+   - Visibilidade instantanea da classificacao dos dados combinada com analise comportamental.
