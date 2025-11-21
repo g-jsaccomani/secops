@@ -1,0 +1,24 @@
+================================================================================
+POC / DEMO IDEA: Gemini in Security Operations (IA como Copiloto do SOC)
+Arquivo: 07_demo_gemini_secops_soc_copilot.txt
+Tempo Estimado de Apresentacao: 10 minutos
+Nivel de Impacto Comercial: ALTISSIMO (Demonstracao Visual de IA Generativa)
+================================================================================
+
+1. HISTORIA DO CENARIO (STORYTELLING):
+   Um analista junior do SOC recebe um alerta complexo com dezenas de eventos e telemetria 
+   de rede em formato JSON. O analista precisa entender o ataque rapidamente, gerar um 
+   relatorio executivo e criar uma regra de deteccao personalizada.
+
+2. FLUXO DA DEMONSTRACAO NO GOOGLE SECOPS:
+   - O analista abre o caso no Chronicle SIEM / SOAR e clica em "Summarize with Gemini".
+   - O Gemini resume todo o incidente em linguagem natural clara em portugues:
+     * O que aconteceu, quais recursos foram afetados, qual a hipotese de ameaca.
+   - O analista pede: "Crie uma regra YARA-L para detectar esse padrao nos proximos 30 dias".
+   - O Gemini gera o codigo YARA-L pronto para ativacao.
+   - O Gemini gera a descricao formatada para envio a diretoria / C-Level.
+
+3. VALOR DESTACADO PARA O CLIENTE:
+   - Aumento drastico da produtividade dos analistas N1/N2.
+   - Democratizacao do conhecimento de ciberseguranca na equipe.
+   - Reducao do tempo de investigacao de 45 minutos para 2 minutos.
