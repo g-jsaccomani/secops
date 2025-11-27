@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Enterprise SOC - Automated Phishing Incident Triage & Remediation",
+  "description": "Orchestrates end-to-end phishing incident response: artifact extraction (URLs, domains, file hashes), threat intelligence enrichment via VirusTotal and Mandiant GTI, user notification, email purge from mailboxes, and automated firewall/EDR blacklisting.",
+  "version": "1.2.0",
+  "author": "Joabson Saccomani (@jsaccomani)",
+  "category": "Email Security & Phishing",
+  "trigger": {
+    "type": "ALERT_TRIGGER",
+    "alert_rule": "generic_secops_phishing_user_report_or_detection",
+    "environment": "generic-secops-lab",
+    "pubsub_topic": "projects/prj-secops-enterprise-lab/topics/top-secops-ent-soar-triggers-generic-secops-lab"
+  },
+  "steps": [
+    {
+      "step_id": "step_01_extract_artifacts",
+      "name": "Extract Email Artifacts & Observables",
+      "action_type": "PARSER_ACTION",
+      "integration": "Tools",
+      "parameters": {
+        "source": "Alert.RawData",
+        "extract_entities": ["url", "domain", "file_hash_sha256", "sender_email", "recipient_email", "message_id"]
+      },
+      "next_step": "step_02_enrich_threat_intel"
+    },
+    {
+      "step_id": "step_02_enrich_threat_intel",
+      "name": "Threat Intelligence Enrichment (VirusTotal & Mandiant GTI)",
+      "action_type": "INTEGRATION_ACTION",
+      "integration": "VirusTotal_V3",
+      "action_name": "Get_URL_and_Hash_Reputation",
+      "parameters": {
+        "urls": "Context.Extracted.URLs",
+        "hashes": "Context.Extracted.Hashes",
+        "enrich_with_mandiant": true
+      },
+      "next_step": "step_03_evaluate_verdict"
+    },
+    {
+      "step_id": "step_03_evaluate_verdict",
+      "name": "Evaluate Malicious Verdict Condition",
+      "action_type": "CONDITIONAL_BRANCH",
+      "conditions": [
+        {
+          "expression": "VirusTotal.Malicious_Detections >= 3 or Mandiant.Threat_Score >= 70",
+          "next_step": "step_04_containment_and_block"
+        },
+        {
+          "expression": "VirusTotal.Malicious_Detections == 0 and Mandiant.Threat_Score < 20",
+          "next_step": "step_06_close_false_positive"
+        }
+      ],
+      "default_next_step": "step_05_analyst_review_prompt"
+    },
+    {
+      "step_id": "step_04_containment_and_block",
+      "name": "Execute Automated Containment & Purge",
+      "action_type": "PARALLEL_EXECUTION",
+      "sub_actions": [
+        {
+          "name": "Purge Email Across All Mailboxes (Exchange/Gmail)",
+          "integration": "Google_Workspace_or_Exchange",
+          "action_name": "Hard_Delete_Message_By_ID",
+          "parameters": {
+            "message_id": "Context.Extracted.MessageID"
+          }
+        },
+        {
+          "name": "Block Malicious URL on Firewalls & Proxy",
+          "integration": "PaloAlto_PAN_OS",
+          "action_name": "Add_URL_To_Block_Custom_URL_Category",
+          "parameters": {
+            "url_list": "Context.Extracted.URLs",
+            "category_name": "Enterprise_SecOps_Automated_Blocklist"
+          }
+        },
+        {
+          "name": "Blacklist File Hash on CrowdStrike Falcon EDR",
+          "integration": "CrowdStrike_Falcon",
+          "action_name": "Upload_Custom_IOC_Hash",
+          "parameters": {
+            "sha256": "Context.Extracted.Hashes",
+            "action": "PREVENT"
+          }
+        },
+        {
+          "name": "Notify User of Neutralized Threat",
+          "integration": "Google_Chat_or_Slack",
+          "action_name": "Send_Security_Alert_Card",
+          "parameters": {
+            "recipient": "Context.Extracted.RecipientEmail",
+            "message": "A phishing email was detected and automatically quarantined from your inbox. No further action is needed."
+          }
+        }
+      ],
+      "next_step": "step_07_generate_incident_summary"
+    },
+    {
+      "step_id": "step_05_analyst_review_prompt",
+      "name": "Human-in-the-Loop Analyst Verification",
+      "action_type": "MANUAL_TASK",
+      "assignee_role": "SOC_Tier_2_Analyst",
+      "timeout_minutes": 60,
+      "instructions": "Verdict is inconclusive. Review VirusTotal report and URL Sandbox sandbox screenshot before confirming containment.",
+      "next_step": "step_07_generate_incident_summary"
+    },
+    {
+      "step_id": "step_06_close_false_positive",
+      "name": "Close Alert as Benign / False Positive",
+      "action_type": "CASE_MANAGEMENT_ACTION",
+      "action_name": "Update_Case_Status",
+      "parameters": {
+        "status": "CLOSED",
+        "root_cause": "FALSE_POSITIVE",
+        "comment": "Automated threat intelligence scans returned 0 malicious detections."
+      }
+    },
+    {
+      "step_id": "step_07_generate_incident_summary",
+      "name": "Gemini in SecOps Auto-Summary & Case Closure",
+      "action_type": "AI_GENERATIVE_ACTION",
+      "model": "Gemini_in_SecOps",
+      "prompt": "Generate an executive incident report in Portuguese detailing the sender, targeted user, malicious URLs/hashes identified, and all automated containment actions taken.",
+      "output_field": "Case.ExecutiveSummary",
+      "next_step": "step_08_close_remediated_case"
+    },
+    {
+      "step_id": "step_08_close_remediated_case",
+      "name": "Close Remediated Incident Case",
+      "action_type": "CASE_MANAGEMENT_ACTION",
+      "action_name": "Update_Case_Status",
+      "parameters": {
+        "status": "CLOSED_RESOLVED",
+        "root_cause": "CONFIRMED_PHISHING_REMEDIATED"
+      }
+    }
+  ]
+}
