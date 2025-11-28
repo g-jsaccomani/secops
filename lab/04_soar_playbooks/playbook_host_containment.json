@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Enterprise SOC - Automated Host Containment & Identity Isolation",
+  "description": "Orchestrates critical incident containment: isolates compromised endpoint via EDR (CrowdStrike Falcon / Microsoft Defender), isolates host IP on Next-Gen Firewalls, revokes active user sessions and forces password reset in Microsoft Entra ID / GCP IAM, and posts forensic triage data.",
+  "version": "1.1.0",
+  "author": "Joabson Saccomani (@jsaccomani)",
+  "category": "Endpoint & Identity Containment",
+  "trigger": {
+    "type": "ALERT_TRIGGER",
+    "alert_rules": [
+      "generic_secops_endpoint_suspicious_process_launch",
+      "generic_secops_network_outbound_threat_intel_ioc_match",
+      "generic_secops_gcp_privilege_escalation_sensitive_role"
+    ],
+    "environment": "generic-secops-lab",
+    "pubsub_topic": "projects/prj-secops-enterprise-lab/topics/top-secops-ent-soar-triggers-generic-secops-lab"
+  },
+  "steps": [
+    {
+      "step_id": "step_01_triage_and_enrich",
+      "name": "Triage Alert Entities (Host, IP, User)",
+      "action_type": "PARSER_ACTION",
+      "integration": "Tools",
+      "parameters": {
+        "source": "Alert.Entities",
+        "extract_fields": ["hostname", "internal_ip", "mac_address", "user_principal_name", "risk_score", "alert_name"]
+      },
+      "next_step": "step_02_contain_host_network"
+    },
+    {
+      "step_id": "step_02_contain_host_network",
+      "name": "Isolate Endpoint via EDR (CrowdStrike Falcon)",
+      "action_type": "INTEGRATION_ACTION",
+      "integration": "CrowdStrike_Falcon",
+      "action_name": "Contain_Host_By_ID_Or_Hostname",
+      "parameters": {
+        "hostname": "Context.Extracted.Hostname",
+        "containment_type": "NETWORK_ISOLATE"
+      },
+      "error_handling": {
+        "on_failure": "step_03_firewall_quarantine_fallback"
+      },
+      "next_step": "step_03_firewall_quarantine_fallback"
+    },
+    {
+      "step_id": "step_03_firewall_quarantine_fallback",
+      "name": "Apply Firewall Quarantine Rule (Palo Alto / Fortinet)",
+      "action_type": "INTEGRATION_ACTION",
+      "integration": "PaloAlto_PAN_OS",
+      "action_name": "Add_IP_To_Quarantine_Dynamic_Address_Group",
+      "parameters": {
+        "ip_address": "Context.Extracted.InternalIP",
+        "dag_name": "DAG_Enterprise SOC_Quarantined_Hosts",
+        "timeout_hours": 24
+      },
+      "next_step": "step_04_revoke_user_credentials"
+    },
+    {
+      "step_id": "step_04_revoke_user_credentials",
+      "name": "Revoke User Sessions & Force Password Reset (Entra ID)",
+      "action_type": "INTEGRATION_ACTION",
+      "integration": "Microsoft_Entra_ID",
+      "action_name": "Revoke_SignIn_Sessions_And_Reset_Password",
+      "parameters": {
+        "user_principal_name": "Context.Extracted.UserPrincipalName",
+        "force_password_change_on_next_login": true,
+        "disable_account": false
+      },
+      "next_step": "step_05_collect_forensic_evidence"
+    },
+    {
+      "step_id": "step_05_collect_forensic_evidence",
+      "name": "Collect Memory Dump & Process Tree Artifacts",
+      "action_type": "INTEGRATION_ACTION",
+      "integration": "CrowdStrike_Falcon",
+      "action_name": "Trigger_RealTime_Response_Triage",
+      "parameters": {
+        "hostname": "Context.Extracted.Hostname",
+        "commands": ["ps", "netstat", "ipconfig /all", "whoami /all"],
+        "save_to_bucket": "gs://bkt-secops-ent-ingestion-prj-secops-enterprise-lab/forensics/"
+      },
+      "next_step": "step_06_notify_soc_incident_room"
+    },
+    {
+      "step_id": "step_06_notify_soc_incident_room",
+      "name": "Notify SOC & CSIRT Channels (Google Chat / Slack / Teams)",
+      "action_type": "INTEGRATION_ACTION",
+      "integration": "Google_Chat_or_Slack",
+      "action_name": "Post_Incident_WarRoom_Notification",
+      "parameters": {
+        "channel": "#soc-incidents-generic_secops",
+        "severity": "CRITICAL",
+        "title": "🚨 Host Quarantined & User Revoked Automatically",
+        "details": "Host: ${Context.Extracted.Hostname} (IP: ${Context.Extracted.InternalIP}) was contained via EDR. User: ${Context.Extracted.UserPrincipalName} sessions revoked."
+      },
+      "next_step": "step_07_gemini_post_containment_summary"
+    },
+    {
+      "step_id": "step_07_gemini_post_containment_summary",
+      "name": "Gemini in SecOps Containment Documentation",
+      "action_type": "AI_GENERATIVE_ACTION",
+      "model": "Gemini_in_SecOps",
+      "prompt": "Generate a chronological timeline of the containment actions taken for host ${Context.Extracted.Hostname} and user ${Context.Extracted.UserPrincipalName}, including forensic evidence stored in GCS.",
+      "output_field": "Case.ContainmentReport",
+      "next_step": "step_08_set_case_contained"
+    },
+    {
+      "step_id": "step_08_set_case_contained",
+      "name": "Update Incident Case to Contained",
+      "action_type": "CASE_MANAGEMENT_ACTION",
+      "action_name": "Update_Case_Status",
+      "parameters": {
+        "status": "IN_PROGRESS",
+        "stage": "CONTAINED_AWAITING_RECOVERY",
+        "priority": "P1_CRITICAL"
+      }
+    }
+  ]
+}
