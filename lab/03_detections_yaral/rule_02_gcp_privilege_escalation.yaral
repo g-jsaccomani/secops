@@ -1,0 +1,47 @@
+rule generic_secops_gcp_privilege_escalation_sensitive_role {
+  meta:
+    author = "Joabson Saccomani (@jsaccomani)"
+    description = "Detects critical IAM role assignments (Owner, Editor, Security Admin, Organization Admin, Token Creator) or creation of privileged Service Accounts in GCP"
+    severity = "CRITICAL"
+    priority = "HIGH"
+    mitre_attack_tactic = "TA0004 - Privilege Escalation, TA0003 - Persistence"
+    mitre_attack_technique = "T1098 - Account Manipulation, T1078.004 - Cloud Accounts"
+    reference = "https://cloud.google.com/security-command-center/docs/concepts-vulnerabilities-threats"
+
+  events:
+    $gcp.metadata.vendor_name = "Google Cloud Platform"
+    $gcp.metadata.product_name = "GCP Cloud Audit"
+
+    // Detect SetIamPolicy, CreateServiceAccountKey, or Service Account creation with sensitive roles
+    (
+      $gcp.metadata.product_event_type = "google.iam.v1.IAM.SetIamPolicy" or
+      $gcp.metadata.product_event_type = "google.iam.admin.v1.CreateServiceAccountKey" or
+      $gcp.metadata.product_event_type = "google.iam.admin.v1.CreateServiceAccount" or
+      $gcp.metadata.product_event_type = "v1.compute.instances.setServiceAccount"
+    )
+
+    // Filter for sensitive role grants or key creation
+    (
+      re.regex($gcp.target.resource.attribute.labels["role"], `roles/(owner|editor|resourcemanager\.organizationAdmin|iam\.securityAdmin|iam\.serviceAccountTokenCreator|iam\.serviceAccountKeyAdmin)`) or
+      re.regex($gcp.target.resource.name, `roles/(owner|editor|resourcemanager\.organizationAdmin|iam\.securityAdmin|iam\.serviceAccountTokenCreator)`) or
+      $gcp.metadata.product_event_type = "google.iam.admin.v1.CreateServiceAccountKey"
+    )
+
+    $actor = $gcp.principal.user.userid
+    $target_resource = $gcp.target.resource.name
+
+  match:
+    $actor over 5m
+
+  outcome:
+    $risk_score = max(95)
+    $caller_user = array_distinct($gcp.principal.user.userid)
+    $caller_ip = array_distinct($gcp.principal.ip)
+    $affected_resource = array_distinct($target_resource)
+    $method_name = array_distinct($gcp.metadata.product_event_type)
+    $assigned_role = array_distinct($gcp.target.resource.attribute.labels["role"])
+    $mitre_technique = "T1098"
+
+  condition:
+    $gcp
+}
