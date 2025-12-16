@@ -1,0 +1,54 @@
+rule generic_secops_network_outbound_threat_intel_ioc_match {
+  meta:
+    author = "Joabson Saccomani (@jsaccomani)"
+    description = "Detects outbound network traffic from internal VPC or endpoints to known malicious external IPs/Domains enriched by Chronicle Threat Intelligence & Mandiant IOCs"
+    severity = "CRITICAL"
+    priority = "HIGH"
+    mitre_attack_tactic = "TA0011 - Command and Control, TA0010 - Exfiltration"
+    mitre_attack_technique = "T1071 - Application Layer Protocol, T1573 - Encrypted Channel"
+    reference = "https://cloud.google.com/chronicle/docs/detection/threat-intel"
+
+  events:
+    // Outbound network connection event from VPC Flow, Firewall, or EDR
+    (
+      $net.metadata.event_type = "NETWORK_CONNECTION" or
+      $net.metadata.event_type = "NETWORK_HTTP" or
+      $net.metadata.event_type = "NETWORK_DNS"
+    )
+
+    $net.network.direction = "OUTBOUND"
+    $net.target.ip = $dst_ip
+
+    // Exclude RFC 1918 Private Addresses from malicious IOC matching
+    !net.ip_in_range_cidr($net.target.ip, "10.0.0.0/8")
+    !net.ip_in_range_cidr($net.target.ip, "172.16.0.0/12")
+    !net.ip_in_range_cidr($net.target.ip, "192.168.0.0/16")
+
+    // Correlation with Chronicle Threat Intelligence Entity Graph / IOC list
+    $ioc.graph.entity.artifact.ip = $dst_ip
+    $ioc.graph.entity.threat.confidence != "LOW"
+    $ioc.graph.metadata.entity_type = "IP_ADDRESS"
+
+    $src_ip = $net.principal.ip
+    $target_host = $net.target.hostname
+
+  match:
+    $src_ip over 15m
+
+  outcome:
+    $risk_score = max(
+      if($ioc.graph.entity.threat.severity = "CRITICAL", 100,
+      if($ioc.graph.entity.threat.severity = "HIGH", 85,
+      if($ioc.graph.entity.threat.severity = "MEDIUM", 60, 40)))
+    )
+    $internal_source_ip = array_distinct($src_ip)
+    $destination_c2_ip = array_distinct($dst_ip)
+    $destination_domain = array_distinct($target_host)
+    $threat_actor_group = array_distinct($ioc.graph.entity.threat.threat_feed_name)
+    $threat_campaign = array_distinct($ioc.graph.entity.threat.category_details)
+    $mitre_tactic = "TA0011"
+    $mitre_technique = "T1071"
+
+  condition:
+    $net and $ioc
+}
