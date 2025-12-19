@@ -1,0 +1,43 @@
+rule generic_secops_entra_id_bruteforce_success {
+  meta:
+    author = "Joabson Saccomani (@jsaccomani)"
+    description = "Detects multiple failed login attempts followed by a successful authentication for the same user in Microsoft Entra ID within 10 minutes"
+    severity = "HIGH"
+    priority = "HIGH"
+    mitre_attack_tactic = "TA0006 - Credential Access"
+    mitre_attack_technique = "T1110.001 - Password Guessing, T1110.003 - Password Spraying"
+    reference = "https://attack.mitre.org/techniques/T1110/"
+
+  events:
+    // 1. Multiple Failed Login Attempts
+    $fail.metadata.event_type = "USER_LOGIN"
+    $fail.metadata.vendor_name = "Microsoft"
+    $fail.security_result.action = "BLOCK"
+    $fail.principal.user.userid = $user
+    $fail.principal.ip = $fail_ip
+
+    // 2. Subsequent Successful Login
+    $success.metadata.event_type = "USER_LOGIN"
+    $success.metadata.vendor_name = "Microsoft"
+    $success.security_result.action = "ALLOW"
+    $success.principal.user.userid = $user
+    $success.principal.ip = $success_ip
+
+    // Ensure the successful login occurred after the first failure
+    $fail.metadata.event_timestamp.seconds < $success.metadata.event_timestamp.seconds
+
+  match:
+    $user over 10m
+
+  outcome:
+    $risk_score = max(85)
+    $failed_attempt_count = count_distinct($fail.metadata.id)
+    $distinct_source_ips = count_distinct($fail.principal.ip)
+    $target_user = array_distinct($user)
+    $compromised_ip = array_distinct($success_ip)
+    $attack_source_ips = array_distinct($fail_ip)
+    $mitre_technique = "T1110"
+
+  condition:
+    #fail >= 5 and #success >= 1
+}
