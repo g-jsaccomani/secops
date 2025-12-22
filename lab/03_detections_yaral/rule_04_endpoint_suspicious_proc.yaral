@@ -1,0 +1,53 @@
+rule generic_secops_endpoint_suspicious_process_launch {
+  meta:
+    author = "Joabson Saccomani (@jsaccomani)"
+    description = "Detects anomalous process creation, encoded PowerShell commands, LOLBINs abuse (certutil, bitsadmin, mshta, wmic, rundll32) or suspicious subprocess spawning on endpoints"
+    severity = "HIGH"
+    priority = "HIGH"
+    mitre_attack_tactic = "TA0002 - Execution, TA0005 - Defense Evasion"
+    mitre_attack_technique = "T1059.001 - PowerShell, T1218 - System Binary Proxy Execution"
+    reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+  events:
+    $proc.metadata.event_type = "PROCESS_LAUNCH"
+    $proc.principal.hostname = $hostname
+    $proc.principal.user.userid = $user
+
+    // Identify suspicious process execution patterns
+    (
+      // PowerShell Encoded, DownloadString, or IEX execution
+      (
+        re.regex($proc.target.process.file.name, `powershell(\.exe)?|pwsh(\.exe)?`) and
+        (
+          re.regex($proc.target.process.command_line, `-[eE](?:nc(?:odedcommand)?)?\s+[A-Za-z0-9+/=]{20,}`) or
+          re.regex($proc.target.process.command_line, `(?i)(DownloadString|DownloadFile|IEX|Invoke-Expression|System\.Net\.WebClient)`)
+        )
+      ) or
+      // LOLBINs abusing download or execution capabilities
+      (
+        re.regex($proc.target.process.file.name, `(?i)(certutil\.exe|bitsadmin\.exe|mshta\.exe|wmic\.exe|regsvr32\.exe|cscript\.exe|wscript\.exe)`) and
+        re.regex($proc.target.process.command_line, `(?i)(-urlcache|-split|http://|https://|/e:jscript|/e:vbscript|process call create)`)
+      ) or
+      // Suspicious Linux execution (curl/wget piping to bash/sh, reverse shells)
+      (
+        re.regex($proc.target.process.file.name, `(bash|sh|zsh|python[23]?)`) and
+        re.regex($proc.target.process.command_line, `(?i)(curl.*\|.*(?:bash|sh)|wget.*\|.*(?:bash|sh)|nc\s+-[eE]|/dev/tcp/\d+)`)
+      )
+    )
+
+  match:
+    $hostname over 5m
+
+  outcome:
+    $risk_score = max(80)
+    $host_name = array_distinct($hostname)
+    $user_id = array_distinct($user)
+    $process_name = array_distinct($proc.target.process.file.name)
+    $command_line = array_distinct($proc.target.process.command_line)
+    $parent_process = array_distinct($proc.principal.process.file.name)
+    $file_sha256 = array_distinct($proc.target.process.file.sha256)
+    $mitre_technique = "T1059.001"
+
+  condition:
+    $proc
+}
