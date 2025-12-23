@@ -1,0 +1,54 @@
+rule generic_secops_identity_impossible_travel_anomaly {
+  meta:
+    author = "Joabson Saccomani (@jsaccomani)"
+    description = "Detects consecutive successful user logins for the same user account from two different countries or distant geolocations within 1 hour"
+    severity = "HIGH"
+    priority = "HIGH"
+    mitre_attack_tactic = "TA0001 - Initial Access, TA0006 - Credential Access"
+    mitre_attack_technique = "T1078 - Valid Accounts"
+    reference = "https://attack.mitre.org/techniques/T1078/"
+
+  events:
+    // 1. First Successful Login Event
+    $login1.metadata.event_type = "USER_LOGIN"
+    $login1.security_result.action = "ALLOW"
+    $login1.principal.user.userid = $user
+    $login1.principal.ip = $ip1
+    $login1.principal.location.country_or_region = $country1
+
+    // Exclude unknown/empty country metadata
+    $country1 != ""
+    $country1 != "UNKNOWN"
+
+    // 2. Second Successful Login Event
+    $login2.metadata.event_type = "USER_LOGIN"
+    $login2.security_result.action = "ALLOW"
+    $login2.principal.user.userid = $user
+    $login2.principal.ip = $ip2
+    $login2.principal.location.country_or_region = $country2
+
+    // Different country and different source IP
+    $country1 != $country2
+    $ip1 != $ip2
+    $country2 != ""
+    $country2 != "UNKNOWN"
+
+    // Ensure chronological order
+    $login1.metadata.event_timestamp.seconds < $login2.metadata.event_timestamp.seconds
+
+  match:
+    $user over 1h
+
+  outcome:
+    $risk_score = max(85)
+    $target_user = array_distinct($user)
+    $origin_country = array_distinct($country1)
+    $destination_country = array_distinct($country2)
+    $first_login_ip = array_distinct($ip1)
+    $second_login_ip = array_distinct($ip2)
+    $time_delta_minutes = max(($login2.metadata.event_timestamp.seconds - $login1.metadata.event_timestamp.seconds) / 60)
+    $mitre_technique = "T1078"
+
+  condition:
+    $login1 and $login2
+}
