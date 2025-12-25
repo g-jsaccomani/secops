@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "project_id": "prj-secops-enterprise-lab",
+  "environment": "generic-secops-lab",
+  "pipeline_endpoints": {
+    "pubsub_topic": "projects/prj-secops-enterprise-lab/topics/top-secops-ent-ingestion-generic-secops-lab",
+    "pubsub_subscription": "projects/prj-secops-enterprise-lab/subscriptions/sub-secops-ent-ingestion-generic-secops-lab",
+    "gcs_bucket": "gs://bkt-secops-ent-ingestion-prj-secops-enterprise-lab",
+    "soar_trigger_topic": "projects/prj-secops-enterprise-lab/topics/top-secops-ent-soar-triggers-generic-secops-lab"
+  },
+  "log_sources": [
+    {
+      "source_name": "GCP Cloud Audit Logs (Admin & Data Access)",
+      "log_type": "GCP_CLOUDAUDIT",
+      "ingestion_method": "PUBSUB",
+      "endpoint": "projects/prj-secops-enterprise-lab/topics/top-secops-ent-ingestion-generic-secops-lab",
+      "format": "JSON",
+      "authentication": {
+        "type": "GCP_SERVICE_ACCOUNT",
+        "service_account": "sa-secops-ent-generic-secops-lab@prj-secops-enterprise-lab.iam.gserviceaccount.com"
+      },
+      "filter_query": "logName:(\"logs/cloudaudit.googleapis.com%2Factivity\" OR \"logs/cloudaudit.googleapis.com%2Fdata_access\" OR \"logs/cloudaudit.googleapis.com%2Fpolicy\")",
+      "poll_interval_seconds": 0,
+      "enabled": true
+    },
+    {
+      "source_name": "GCP VPC Flow Logs",
+      "log_type": "GCP_VPC_FLOW",
+      "ingestion_method": "PUBSUB",
+      "endpoint": "projects/prj-secops-enterprise-lab/topics/top-secops-ent-ingestion-generic-secops-lab",
+      "format": "JSON",
+      "authentication": {
+        "type": "GCP_SERVICE_ACCOUNT",
+        "service_account": "sa-secops-ent-generic-secops-lab@prj-secops-enterprise-lab.iam.gserviceaccount.com"
+      },
+      "filter_query": "logName:\"logs/compute.googleapis.com%2Fvpc_flows\"",
+      "enabled": true
+    },
+    {
+      "source_name": "Microsoft Entra ID (Azure AD - Sign-in & Audit)",
+      "log_type": "AZURE_AD",
+      "ingestion_method": "WEBHOOK_PUBSUB",
+      "endpoint": "projects/prj-secops-enterprise-lab/topics/top-secops-ent-ingestion-generic-secops-lab",
+      "fallback_archive": "gs://bkt-secops-ent-ingestion-prj-secops-enterprise-lab/entra-id/",
+      "format": "JSON",
+      "authentication": {
+        "type": "OAUTH2_CLIENT_CREDENTIALS",
+        "tenant_id_secret": "projects/prj-secops-enterprise-lab/secrets/secops-entra-tenant-id",
+        "client_id_secret": "projects/prj-secops-enterprise-lab/secrets/secops-entra-client-id",
+        "client_secret": "projects/prj-secops-enterprise-lab/secrets/secops-entra-client-secret"
+      },
+      "categories": [
+        "SignInLogs",
+        "AuditLogs",
+        "NonInteractiveUserSignInLogs",
+        "ServicePrincipalSignInLogs",
+        "ManagedIdentitySignInLogs"
+      ],
+      "enabled": true
+    },
+    {
+      "source_name": "CrowdStrike Falcon EDR (Endpoint Telemetry & Detections)",
+      "log_type": "CROWDSTRIKE_EDR",
+      "ingestion_method": "SQS_TO_PUBSUB_OR_GCS",
+      "endpoint": "projects/prj-secops-enterprise-lab/topics/top-secops-ent-ingestion-generic-secops-lab",
+      "fallback_archive": "gs://bkt-secops-ent-ingestion-prj-secops-enterprise-lab/crowdstrike-fdr/",
+      "format": "JSON",
+      "authentication": {
+        "type": "API_KEY_SECRET_MANAGER",
+        "client_id_secret": "projects/prj-secops-enterprise-lab/secrets/secops-crowdstrike-client-id",
+        "client_secret": "projects/prj-secops-enterprise-lab/secrets/secops-crowdstrike-secret"
+      },
+      "event_streams": [
+        "DetectionSummaryEvent",
+        "ProcessRollup2",
+        "NetworkConnectIP4",
+        "UserLogon",
+        "DnsRequest"
+      ],
+      "enabled": true
+    },
+    {
+      "source_name": "Palo Alto Networks Next-Gen Firewall (PAN-OS)",
+      "log_type": "PAN_FIREWALL",
+      "ingestion_method": "SYSLOG_TO_PUBSUB",
+      "endpoint": "projects/prj-secops-enterprise-lab/topics/top-secops-ent-ingestion-generic-secops-lab",
+      "fallback_archive": "gs://bkt-secops-ent-ingestion-prj-secops-enterprise-lab/palo-alto/",
+      "format": "CEF_SYSLOG",
+      "port": 514,
+      "protocol": "TLS",
+      "log_subtypes": [
+        "TRAFFIC",
+        "THREAT",
+        "SYSTEM",
+        "CONFIG",
+        "GLOBALPROTECT"
+      ],
+      "enabled": true
+    },
+    {
+      "source_name": "Fortinet FortiGate Firewall",
+      "log_type": "FORTINET_FORTIGATE",
+      "ingestion_method": "SYSLOG_TO_PUBSUB",
+      "endpoint": "projects/prj-secops-enterprise-lab/topics/top-secops-ent-ingestion-generic-secops-lab",
+      "fallback_archive": "gs://bkt-secops-ent-ingestion-prj-secops-enterprise-lab/fortinet/",
+      "format": "KEY_VALUE_SYSLOG",
+      "port": 514,
+      "protocol": "TLS",
+      "log_types": [
+        "traffic",
+        "event",
+        "utm",
+        "vpn"
+      ],
+      "enabled": true
+    }
+  ]
+}
