@@ -1,0 +1,21 @@
+# Parent Resource (Organization or Folder ID)
+# Format: "organizations/123456789012" or "folders/123456789012"
+parent_id = "organizations/YOUR_ORGANIZATION_ID"
+
+# Billing Account ID
+# Format: "XXXXXX-XXXXXX-XXXXXX"
+billing_account_id = "000000-000000-000000"
+
+# Environment & Location
+environment = "dev"
+region      = "us-central1"
+
+# Custom Folder Name (Optional - leave empty for auto-generated name)
+folder_name = "fldr-enterprise-secops-standard-dev"
+
+# Custom Labels
+custom_labels = {
+  customer    = "enterprise"
+  managed_by  = "terraform"
+  project     = "secops"
+}
