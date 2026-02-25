@@ -131,3 +131,5 @@ rule generic_secops_suspicious_cross_platform_activity {
     #login >= 3 and $fw
 }
 ```
+
+<!-- Checkpoint: 2026-02-25 - poc(soar-playbook): build automated containment playbook for compromised user account -->
