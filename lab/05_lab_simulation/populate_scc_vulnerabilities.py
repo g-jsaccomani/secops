@@ -340,3 +340,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Audit checkpoint [2026-02-26]: feat(udm-mapping): add UDM parser mapping for custom firewall syslog format
