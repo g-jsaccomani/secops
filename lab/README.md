@@ -36,3 +36,5 @@ LAB/
 
 5. **Simulate & Validate**:
    Run the simulation toolkit in [`05_lab_simulation/`](05_lab_simulation/) to test detection and response workflows.
+
+<!-- Checkpoint: 2026-03-04 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
