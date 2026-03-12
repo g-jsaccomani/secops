@@ -29,3 +29,6 @@ All notable changes and security updates recorded below.
 ### [2026-03-10] feat(udm-mapping): add UDM parser mapping for custom firewall syslog format
 - Built Logstash / Chronicle parser mapping on-prem firewall logs to Unified Data Model (UDM).
 
+### [2026-03-12] lab(lateral-movement): test detection rule for rapid cross-project IAM role assumption
+- Created detection rule identifying service accounts assuming admin roles across >3 distinct projects in <10m.
+
