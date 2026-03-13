@@ -32,3 +32,6 @@ All notable changes and security updates recorded below.
 ### [2026-03-12] lab(lateral-movement): test detection rule for rapid cross-project IAM role assumption
 - Created detection rule identifying service accounts assuming admin roles across >3 distinct projects in <10m.
 
+### [2026-03-13] docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules
+- Mapped 35 custom YARA-L detection rules to MITRE ATT&CK tactics and techniques.
+

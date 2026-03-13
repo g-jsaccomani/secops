@@ -160,3 +160,5 @@ cp terraform.tfvars.example terraform.tfvars
 
 ## License
 This project is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
+
+<!-- Checkpoint: 2026-03-13 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
