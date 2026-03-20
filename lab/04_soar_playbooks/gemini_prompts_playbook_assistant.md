@@ -87,3 +87,5 @@ Atue como o Assistente de IA de SecOps. Com base nas ações executadas neste ca
 - Medidas de contenção e erradicação aplicadas.
 - Recomendações de Lições Aprendidas para mitigar recorrências.
 ```
+
+<!-- Checkpoint: 2026-03-20 - poc(soar-playbook): build automated containment playbook for compromised user account -->
