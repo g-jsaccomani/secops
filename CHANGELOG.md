@@ -41,3 +41,6 @@ All notable changes and security updates recorded below.
 ### [2026-03-20] poc(soar-playbook): build automated containment playbook for compromised user account
 - Created Chronicle SOAR playbook automating user credential revocation and session invalidation.
 
+### [2026-03-22] feat(udm-mapping): add UDM parser mapping for custom firewall syslog format
+- Built Logstash / Chronicle parser mapping on-prem firewall logs to Unified Data Model (UDM).
+
