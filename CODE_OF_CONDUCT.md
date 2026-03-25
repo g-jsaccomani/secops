@@ -13,3 +13,5 @@ Examples of behavior that contributes to a positive environment include:
 * Focusing on what is best for the community
 
 <!-- Checkpoint: 2026-02-20 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
+
+<!-- Checkpoint: 2026-03-25 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
