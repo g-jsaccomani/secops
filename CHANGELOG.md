@@ -83,3 +83,6 @@ All notable changes and security updates recorded below.
 ### [2026-04-17] lab(yara-l): create YARA-L rule for suspicious service account key creation
 - Authored Chronicle YARA-L detection rule matching gcp.audit.adminService.createServiceAccountKey events.
 
+### [2026-04-20] poc(soar-playbook): build automated containment playbook for compromised user account
+- Created Chronicle SOAR playbook automating user credential revocation and session invalidation.
+
