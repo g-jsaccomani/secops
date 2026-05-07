@@ -58,3 +58,5 @@ To safely remove all created resources:
 chmod +x destroy.sh
 ./destroy.sh
 ```
+
+<!-- Checkpoint: 2026-05-07 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
