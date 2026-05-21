@@ -19,3 +19,5 @@ Examples of behavior that contributes to a positive environment include:
 <!-- Checkpoint: 2026-04-09 - poc(soar-playbook): build automated containment playbook for compromised user account -->
 
 <!-- Checkpoint: 2026-04-15 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
+
+<!-- Checkpoint: 2026-05-21 - poc(soar-playbook): build automated containment playbook for compromised user account -->
