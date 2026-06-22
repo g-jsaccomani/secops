@@ -13,3 +13,5 @@ Your report will be evaluated and responded to as soon as possible.
 <!-- Checkpoint: 2026-03-06 - poc(soar-playbook): build automated containment playbook for compromised user account -->
 
 <!-- Checkpoint: 2026-06-04 - poc(soar-playbook): build automated containment playbook for compromised user account -->
+
+<!-- Checkpoint: 2026-06-22 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
