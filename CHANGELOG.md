@@ -185,3 +185,6 @@ All notable changes and security updates recorded below.
 ### [2026-07-03] docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules
 - Mapped 35 custom YARA-L detection rules to MITRE ATT&CK tactics and techniques.
 
+### [2026-07-07] lab(yara-l): create YARA-L rule for suspicious service account key creation
+- Authored Chronicle YARA-L detection rule matching gcp.audit.adminService.createServiceAccountKey events.
+
