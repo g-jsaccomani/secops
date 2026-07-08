@@ -12,3 +12,5 @@ Thank you for your interest in contributing to this repository!
 ## Development & Code Quality
 - Ensure all manifests, configurations, and code pass linting and security validations.
 - Document any new architecture, variables, or policy updates in `docs/` or the root `README.md`.
+
+<!-- Checkpoint: 2026-07-08 - poc(soar-playbook): build automated containment playbook for compromised user account -->
