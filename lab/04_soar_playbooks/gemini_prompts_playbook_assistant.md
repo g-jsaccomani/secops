@@ -91,3 +91,5 @@ Atue como o Assistente de IA de SecOps. Com base nas ações executadas neste ca
 <!-- Checkpoint: 2026-03-20 - poc(soar-playbook): build automated containment playbook for compromised user account -->
 
 <!-- Checkpoint: 2026-04-20 - poc(soar-playbook): build automated containment playbook for compromised user account -->
+
+<!-- Checkpoint: 2026-07-14 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
