@@ -126,3 +126,5 @@ No Google SecOps SOAR, as integrações conectam playbooks a ferramentas de terc
 3. **Auditoria de Execução:** Todas as chamadas de conectores geram eventos auditáveis enviados automaticamente ao BigQuery Lake `ds_secops_enterprise_lake_generic_secops_lab`.
 
 <!-- Checkpoint: 2026-07-27 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
+
+<!-- Checkpoint: 2026-07-30 - poc(soar-playbook): build automated containment playbook for compromised user account -->
