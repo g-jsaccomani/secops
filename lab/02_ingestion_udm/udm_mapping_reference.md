@@ -135,3 +135,5 @@ rule generic_secops_suspicious_cross_platform_activity {
 <!-- Checkpoint: 2026-02-25 - poc(soar-playbook): build automated containment playbook for compromised user account -->
 
 <!-- Checkpoint: 2026-04-29 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
+
+<!-- Checkpoint: 2026-08-07 - poc(soar-playbook): build automated containment playbook for compromised user account -->
