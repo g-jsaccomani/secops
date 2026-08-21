@@ -160,11 +160,3 @@ cp terraform.tfvars.example terraform.tfvars
 
 ## License
 This project is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
-
-<!-- Checkpoint: 2026-03-13 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
-
-<!-- Checkpoint: 2026-04-07 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
-
-<!-- Checkpoint: 2026-05-01 - poc(soar-playbook): build automated containment playbook for compromised user account -->
-
-<!-- Checkpoint: 2026-05-12 - poc(soar-playbook): build automated containment playbook for compromised user account -->

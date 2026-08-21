@@ -340,19 +340,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# Audit checkpoint [2026-02-26]: feat(udm-mapping): add UDM parser mapping for custom firewall syslog format
-
-# Audit checkpoint [2026-03-22]: feat(udm-mapping): add UDM parser mapping for custom firewall syslog format
-
-# Audit checkpoint [2026-04-10]: feat(udm-mapping): add UDM parser mapping for custom firewall syslog format
-
-# Audit checkpoint [2026-04-20]: feat(udm-mapping): add UDM parser mapping for custom firewall syslog format
-
-# Audit checkpoint [2026-05-04]: feat(udm-mapping): add UDM parser mapping for custom firewall syslog format
-
-# Audit checkpoint [2026-06-17]: feat(udm-mapping): add UDM parser mapping for custom firewall syslog format
-
-# Audit checkpoint [2026-07-23]: feat(udm-mapping): add UDM parser mapping for custom firewall syslog format
-
-# Audit checkpoint [2026-08-03]: feat(udm-mapping): add UDM parser mapping for custom firewall syslog format

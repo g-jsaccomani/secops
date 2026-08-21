@@ -53,5 +53,3 @@ To safely remove all created resources:
 chmod +x destroy.sh
 ./destroy.sh
 ```
-
-<!-- Checkpoint: 2026-03-27 - poc(soar-playbook): build automated containment playbook for compromised user account -->

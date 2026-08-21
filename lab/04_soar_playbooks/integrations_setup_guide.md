@@ -124,7 +124,3 @@ No Google SecOps SOAR, as integrações conectam playbooks a ferramentas de terc
 1. **Google Cloud Secret Manager:** Nunca insira senhas ou chaves em texto claro. Mantenha todas as credenciais no Secret Manager do projeto `prj-secops-enterprise-lab`.
 2. **Princípio do Privilégio Mínimo:** Conceda aos conectores apenas as permissões estritamente necessárias para as ações de remediação definidas.
 3. **Auditoria de Execução:** Todas as chamadas de conectores geram eventos auditáveis enviados automaticamente ao BigQuery Lake `ds_secops_enterprise_lake_generic_secops_lab`.
-
-<!-- Checkpoint: 2026-07-27 - docs(ruleset): document MITRE ATT&CK mapping for Chronicle detection rules -->
-
-<!-- Checkpoint: 2026-07-30 - poc(soar-playbook): build automated containment playbook for compromised user account -->
